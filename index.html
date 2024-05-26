@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="Ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مواقيت الصلاة</title>
+
+    <script src="./node_modules/axios/dist/axios.min.js"></script>
+    <style>
+        body{
+            background: url(./Background2.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .cityName{
+            color: white;
+            margin-right: 400px;
+            
+        }
+        .cityDisplay{
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            
+        }
+
+        .card {
+            background-color: rgb(165, 151, 100);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(236, 233, 233, 0.1);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-15px);
+        }
+
+        .title {
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: white;
+            margin: 10px 0 0 0;
+        }
+
+        .choices {
+            margin-top: 20px;
+            padding: 12px;
+            font-size: 20px;
+            color: white;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 60%;
+            background-color: rgb(165, 151, 100);
+            margin-right: 175px;
+            text-align: center;
+            
+        }
+        .blurred {
+            filter: blur(4px);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="cityName">
+        <div class="cityDisplay">
+            <h1>مدينة التوقيت : </h1>
+            <h1 id="city">  مكة المكرمة</h1>
+            <h1>التاريخ:</h1>
+            <h1 id="date1"></h1>
+        </div>
+        <hr>
+        <!--بطاقات مواقيت الصلاة-->
+        <div class="card-container">
+            <div class="card">
+                <h2 class="title">الفجر</h2>
+                <h3 class="subtitle" id="fajerTime">4:00 AM</h3>
+            </div>
+            <div class="card">
+                <h2 class="title">الشروق</h2>
+                <h3 class="subtitle" id="ShroqTime">5:30 AM</h3>
+            </div>
+            <div class="card">
+                <h2 class="title">الظهر</h2>
+                <h3 class="subtitle" id="DhurTime">12:30 PM</h3>
+            </div>
+            <div class="card">
+                <h2 class="title">العصر</h2>
+                <h3 class="subtitle" id="AsirTime">3:30 PM</h3>
+            </div>
+            <div class="card">
+                <h2 class="title">المغرب</h2>
+                <h3 class="subtitle" id="MgripTime">6:30 PM</h3>
+            </div>
+            <div class="card">
+                <h2 class="title">العشاء</h2>
+                <h3 class="subtitle" id="IshaTime">8:30 PM</h3>
+            </div>
+            
+        </div>
+        <!------------------------------------------------------>
+        <hr>
+        <!--أختيار مدينة التوقيت-->
+        <div>
+            <h1 style="margin-right: 375px;">أختر المدينة</h1>
+        </div>
+        <div>
+            <select class="choices" id="selectCity">
+                
+            </select>
+        </div>
+        <hr>
+        <h4 style="color: white;">التوقيت حسب توقيت أم القرى</h4>
+    </div>
+    <!--------------------------------------------------------------->
+
+    
+
+
+
+   
+</body>
+<!--هذا السكريبت لجعل بطاقة التوقيت التي ليس مؤشر الفارة عليها مغبش-->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                cards.forEach(c => {
+                    if (c !== card) {
+                        c.classList.add('blurred');
+                    }
+                });
+            });
+
+            card.addEventListener('mouseleave', function() {
+                cards.forEach(c => {
+                    c.classList.remove('blurred');
+                });
+            });
+        });
+    });
+
+//<!------------------------------------------------------------------->
+//<!-- سكريبت تعبئة أسماء المدن في القائمة-->
+
+let cities = [
+    {
+        arabicName: "مكة المكرمة",
+        cityNameSelected : "Makkah al Mukarramah"
+    },
+    {
+        arabicName: "المدينة المنورة",
+        cityNameSelected : "Al Madīnah al Munawwarah"
+    },
+    {
+        arabicName: "الرياض",
+        cityNameSelected : "Ar Riyāḑ"
+    },
+    {
+        arabicName: "بريدة",
+        cityNameSelected : "Al Qaşīm"
+    },
+    {
+        arabicName: "الدمام",
+        cityNameSelected : "Ash Sharqīyah"
+    },
+    {
+        arabicName: "أبها",
+        cityNameSelected : "'Asīr"
+    },
+    {
+        arabicName: "تبوك",
+        cityNameSelected : "Tabūk"
+    },
+    {
+        arabicName: "حائل",
+        cityNameSelected : "Ḩā'il"
+    },
+    {
+        arabicName: "عرعر",
+        cityNameSelected : "Al Ḩudūd ash Shamālīyah"
+    },
+    {
+        arabicName: "جازان",
+        cityNameSelected : "Jāzān"
+    },
+    {
+        arabicName: "نجران",
+        cityNameSelected : "Najrān"
+    },
+    {
+        arabicName: "الباحة",
+        cityNameSelected : "Al Bāḩah"
+    },
+    {
+        arabicName: "سكاكا",
+        cityNameSelected : "Al Jawf"
+    },
+    
+]
+for (let city of cities){
+    const content = `
+         <option>${city.arabicName}</option>
+
+    `
+    document.getElementById("selectCity").innerHTML += content
+
+    
+}
+//إضافة حدث إذا تغيرت المدينة من قائمة الخيارات
+document.getElementById("selectCity").addEventListener("change",function() {
+    //تغير العنوان الذي في الاعلى لأسم المدينة المختارة
+    document.getElementById("city").innerHTML = this.value
+    //جلب توقيت الصلاوات حسب الاختيار المدينة
+    let cityisoName =""
+    for (city of cities){
+        if(city.arabicName == this.value){
+            cityisoName = city.cityNameSelected
+        }
+    }
+    getPrayerTimeByCity(cityisoName)
+})
+
+//<!------------------------------------------------------------->
+//<!--سكريبت جلب مواقيت الصلاة على هيئة جيسون-->
+//المدينة الافتراضية عند تحميل الموقع
+getPrayerTimeByCity("Makkah al Mukarramah")
+    function getPrayerTimeByCity(city){
+                let paramsCityAndCountry = {
+                city: city,//"Ḩā'il",
+                country:"SA",
+                method:4
+            }
+            axios.get('http://api.aladhan.com/v1/timingsByCity', {
+            params: paramsCityAndCountry
+        })
+        .then(function (response) {
+            //توقيت الفجر
+            document.getElementById("fajerTime").innerHTML = response.data.data.timings.Fajr;
+            //توقيت الشروق
+            document.getElementById("ShroqTime").innerHTML = response.data.data.timings.Sunrise;
+            //توقيت الظهر
+            document.getElementById("DhurTime").innerHTML = response.data.data.timings.Dhuhr;
+            //توقيت العصر
+            document.getElementById("AsirTime").innerHTML = response.data.data.timings.Asr;
+            //توقيت المغرب
+            document.getElementById("MgripTime").innerHTML = response.data.data.timings.Maghrib;
+            //توقيت العشاء
+            document.getElementById("IshaTime").innerHTML = response.data.data.timings.Isha;
+            //التاريخ بالهجري
+            document.getElementById("date1").innerHTML = response.data.data.date.hijri.date;
+            //console.log(response.data.data.date.hijri.date);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+        .finally(function () {
+            // always executed
+        });   
+
+    }
+    
+</script>
+<!-------------------------------------------------------------------->
+</html>
